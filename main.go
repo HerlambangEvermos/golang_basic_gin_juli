@@ -2,6 +2,7 @@ package main
 
 import (
 	"golang_basic_gin_juli_2023/config"
+	middlewares "golang_basic_gin_juli_2023/midlewares"
 	"golang_basic_gin_juli_2023/routes"
 	"net/http"
 
@@ -23,7 +24,14 @@ func main() {
 
 	api := r.Group("/api/v1")
 	{
-		department := api.Group("/departments")
+
+		user := api.Group("/user")
+		{
+			user.POST("/register", routes.RegisterUser)
+			user.POST("/login", routes.GenerateToken)
+		}
+
+		department := api.Group("/departments").Use(middlewares.Auth())
 		{
 			department.GET("/", routes.GetDepartment)
 			department.GET("/:id", routes.GetDepartmentById)
@@ -33,7 +41,7 @@ func main() {
 
 		}
 
-		position := api.Group("/positions")
+		position := api.Group("/positions").Use(middlewares.Auth())
 		{
 			position.GET("/", routes.GetPositions)
 			position.GET("/:id", routes.GetPositionsById)
@@ -42,7 +50,7 @@ func main() {
 			position.DELETE("/:id", routes.DeletePositions)
 		}
 
-		employee := api.Group("/employees")
+		employee := api.Group("/employees").Use(middlewares.Auth())
 		{
 			employee.GET("/", routes.GetEmployees)
 			employee.GET("/:id", routes.GetEmployeesByID)
@@ -51,7 +59,7 @@ func main() {
 			employee.DELETE("/:id", routes.DeleteEmployees)
 		}
 
-		inventories := api.Group("/inventories")
+		inventories := api.Group("/inventories").Use(middlewares.Auth())
 		{
 			inventories.GET("/", routes.GetInventories)
 			inventories.GET("/:id", routes.GetInventoriesByID)
@@ -60,7 +68,7 @@ func main() {
 			inventories.DELETE("/:id", routes.DeleteInventories)
 		}
 
-		rental := api.Group("/rental")
+		rental := api.Group("/rental").Use(middlewares.Auth())
 		{
 			rental.GET("/", routes.GetRental)
 			rental.POST("/employee", routes.RentalByEmployeeId)
